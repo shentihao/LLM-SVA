@@ -1,0 +1,57 @@
+llm:
+  enabled: false
+  base_url: ""
+  model: ""
+  temperature: 0.0
+
+analysis:
+  max_file_kb: 512
+  confidence_threshold: 0.60
+
+weights:
+  llm: 0.35
+  static: 0.20
+  flow: 0.30
+  path: 0.15
+
+rules:
+  CWE-89:
+    name: SQL Injection
+    sources:
+      - request.getParameter
+      - getParameter
+      - getQueryString
+      - getHeader
+    sinks:
+      - executeQuery
+      - executeUpdate
+      - execute
+      - prepareStatement
+    sanitizers:
+      - PreparedStatement
+      - setString
+      - setInt
+
+  CWE-78:
+    name: Command Injection
+    sources:
+      - request.getParameter
+      - getParameter
+      - getHeader
+    sinks:
+      - Runtime.getRuntime().exec
+      - ProcessBuilder
+    sanitizers: []
+
+  CWE-22:
+    name: Path Traversal
+    sources:
+      - request.getParameter
+      - getParameter
+    sinks:
+      - FileInputStream
+      - FileOutputStream
+      - Paths.get
+      - new File
+    sanitizers:
+      - normalize

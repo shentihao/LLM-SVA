@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="demo.UserMapper">
+  <sql id="namePredicate">WHERE name = '${lookup}'</sql>
+  <select id="xmlUnsafe" resultType="int">
+    <bind name="lookup" value="name"/>
+    SELECT COUNT(*) FROM users <include refid="namePredicate"/>
+  </select>
+  <select id="xmlSafe" resultType="int">SELECT COUNT(*) FROM users WHERE name = #{name}</select>
+  <select id="foreachUnsafe" resultType="int">
+    SELECT COUNT(*) FROM users WHERE name IN
+    <foreach collection="names" item="item" open="(" separator="," close=")">'${item}'</foreach>
+  </select>
+  <select id="foreachSafe" resultType="int">
+    SELECT COUNT(*) FROM users WHERE name IN
+    <foreach collection="names" item="item" open="(" separator="," close=")">#{item}</foreach>
+  </select>
+  <select id="bindUnsafe" resultType="int">
+    <bind name="pattern" value="'%' + name + '%'"/>
+    SELECT COUNT(*) FROM users WHERE name LIKE '${pattern}'
+  </select>
+  <select id="bindSafe" resultType="int">
+    <bind name="pattern" value="'%' + name + '%'"/>
+    SELECT COUNT(*) FROM users WHERE name LIKE #{pattern}
+  </select>
+</mapper>
